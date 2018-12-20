@@ -51,29 +51,9 @@ import ctypes
 #
 libcmb = ctypes.CDLL('libcmb.so.0')
 
-#
-# Function pointers
-#
-CMB_CALLBACK = ctypes.CFUNCTYPE(ctypes.c_int)
-
 ############################################################ CLASSES
 
 class CMB(ctypes.Structure):
-    _fields_ = [
-        ("debug", ctypes.c_uint8),
-        ("nul_terminate", ctypes.c_uint8),
-        ("show_empty", ctypes.c_uint8),
-        ("show_numbers", ctypes.c_uint8),
-        ("delimiter", ctypes.c_char_p),
-        ("prefix", ctypes.c_char_p),
-        ("suffix", ctypes.c_char_p),
-        ("size_min", ctypes.c_uint32),
-        ("size_max", ctypes.c_uint32),
-        ("count", ctypes.c_uint64),
-        ("start", ctypes.c_uint64),
-        ("action", CMB_CALLBACK),
-    ]
-
     def keys(self):
         keys = []
         for key in (
@@ -100,9 +80,29 @@ class CMB(ctypes.Structure):
     def __setitem__(self, key, value):
         return setattr(self, key, value)
 
+#
+# Function pointers
+#
+CMB_CALLBACK = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.POINTER(CMB), ctypes.c_void_p, ctypes.c_uint32, ctypes.POINTER(ctypes.c_char_p))
+
+CMB._fields_ = [
+        ("debug", ctypes.c_uint8),
+        ("nul_terminate", ctypes.c_uint8),
+        ("show_empty", ctypes.c_uint8),
+        ("show_numbers", ctypes.c_uint8),
+        ("delimiter", ctypes.c_char_p),
+        ("prefix", ctypes.c_char_p),
+        ("suffix", ctypes.c_char_p),
+        ("size_min", ctypes.c_uint32),
+        ("size_max", ctypes.c_uint32),
+        ("count", ctypes.c_uint64),
+        ("start", ctypes.c_uint64),
+        ("action", CMB_CALLBACK),
+    ]
+
 ############################################################ TYPES
 
-#
+# 
 # Strings
 #
 libcmb.cmb_version.restype = ctypes.c_char_p
